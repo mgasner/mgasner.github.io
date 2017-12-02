@@ -11,7 +11,7 @@
             </canvas>
              <div style="z-index: 1; position:relative;">
                 <center>
-                    <h1 id="maninbusinesssuitlevitating" onmouseover="activate();">🕴</h1>
+                    <h1 id="maninbusinesssuitlevitating">🕴</h1>
                     <h2>1f574, LLC</h2>
                     Contract product and engineering management.<br />
                     <a href="mailto:info@1f574.co">info@1f574.co</a>
@@ -19,6 +19,16 @@
             </div> 
         </div>
         <script type="text/javascript">
+
+			var canvas;
+			var context;
+			var proton;
+			var renderer;
+			var emitter;
+			var stats;
+			
+			setTimeout(activate, 2000);
+
             function resizeCanvas(){
                 const canvas = document.getElementById("canvas");
                 if (canvas.width  < window.innerWidth)
@@ -30,15 +40,13 @@
                 {
                     canvas.height = window.innerHeight;
                 }
+				if (emitter) {
+					const box = document.getElementById('maninbusinesssuitlevitating').getBoundingClientRect();
+					emitter.p.x = box.left + box.width / 2;
+					emitter.p.y = box.top + box.height / 2;
+				}
             }
 
-			var canvas;
-			var context;
-			var proton;
-			var renderer;
-			var emitter;
-			var stats;
-			
 			function activate() {
 				canvas = document.getElementById("canvas");
 				canvas.width = window.innerWidth;
@@ -60,20 +68,20 @@
             function createProton(image) {
 				proton = new Proton;
 				emitter = new Proton.Emitter();
-				emitter.rate = new Proton.Rate(new Proton.Span(1, 10), new Proton.Span(.5, 2));
+				emitter.rate = new Proton.Rate(new Proton.Span(2, 10), new Proton.Span(2, 4));
 				emitter.addInitialize(new Proton.ImageTarget(image));
-				emitter.addInitialize(new Proton.Mass(1));
-				emitter.addInitialize(new Proton.Life(2, 4));
+				emitter.addInitialize(new Proton.Mass(new Proton.Span(1, 30)));
+				emitter.addInitialize(new Proton.Life(2, 6));
 				emitter.addInitialize(new Proton.V(new Proton.Span(0.5, 1.5), new Proton.Span(0, 360), 'polar'));
-				emitter.addBehaviour(new Proton.Alpha(1, [.7, 1]));
-				emitter.addBehaviour(new Proton.Scale(1, 0));
+				emitter.addBehaviour(new Proton.Alpha(1, [1, 1], Infinity, Proton.easeInSine));
+				emitter.addBehaviour(new Proton.Scale(new Proton.Span(1, 1.5), 0));
                 emitter.addBehaviour(new Proton.Color('random', 'random', Infinity, Proton.easeInSine));
                 const box = document.getElementById('maninbusinesssuitlevitating').getBoundingClientRect();
 				emitter.p.x = box.left + box.width / 2;
 				emitter.p.y = box.top + box.height / 2;
+                emitter.addBehaviour(new Proton.Attraction(new Proton.Vector2D(emitter.p.x, emitter.p.y), 1));
 				emitter.emit();
 				proton.addEmitter(emitter);
-
 				renderer = new Proton.Renderer('canvas', proton, canvas);
 				renderer.start();
 			}
